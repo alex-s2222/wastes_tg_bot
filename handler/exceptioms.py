@@ -1,2 +1,0 @@
-class NotCorrectMessage(Exception):
-    pass
