@@ -81,7 +81,7 @@ async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 def main() -> None:
-    bot = Application.builder().token("5697158099:AAFw_KKUK88riHC_3FgMeHL10T_BsR9Y3U8").build()
+    bot = Application.builder().token("TOKEN").build()
     bot.add_handler(CommandHandler("start", start))
     bot.add_handler(CommandHandler("help", help))
 
