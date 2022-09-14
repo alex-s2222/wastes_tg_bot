@@ -16,9 +16,10 @@ class Category(Model):
 
 class Expense(Model):
     id = fields.IntField(pk=True)
-    #  user_expense = fields.ForeignKeyField("models.User")
+    user_expense = fields.ForeignKeyField("models.User")
     price = fields.IntField()
     created = fields.DateField()
     category = fields.CharField(max_length=255)
+
 
 

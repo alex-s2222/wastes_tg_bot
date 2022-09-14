@@ -8,7 +8,7 @@ from handler import expen
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    user = update.message.from_user
+    await expen.create_user(int(update.message.from_user.id))
     await update.message.reply_text("Это бот для учета финансов\n\n Добавить расход: 250 такси\n "
                                     "Статистика за сегодня /today\n За текуший месяц /month\n"
                                     "Последний внесенные расходы /last \n Катеегории трат /categories")
@@ -21,15 +21,22 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 async def add(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text(update.message.text)
-    expense = await expen.add_expen(update.message.text)
-    answer_message = (
-        f"Добавлены траты:\n{expense.amount} руб на {expense.category_name}.")
-    await update.message.reply_text(answer_message)
+    user_id = int(update.message.from_user.id)
+    expense = await expen.add_expen(update.message.text, user_id)
+
+    if isinstance(expense, Expenses):
+        answer_message = (
+            f"Добавлены траты:\n{expense.amount} руб на {expense.category_name}.")
+        await update.message.reply_text(answer_message)
+    elif isinstance(expense, Message):
+        answer_massage = expense.category_text
+        await update.message.reply_text(answer_massage)
 
 
 async def today(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    answer_message = await expen.get_today_statistic()
+    user_id = int(update.message.from_user.id)
+    answer_message = await expen.get_today_statistic(user_id)
+
     await update.message.reply_text(answer_message)
 
 
@@ -45,12 +52,16 @@ async def all_categories(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 
 async def month(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    answer_message = await expen.get_month_statistic()
+    user_id = int(update.message.from_user.id)
+    answer_message = await expen.get_month_statistic(user_id)
+
     await update.message.reply_text(answer_message)
 
 
 async def last(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    last_expenses = await expen.last_expenses()
+    user_id = int(update.message.from_user.id)
+    last_expenses = await expen.last_expenses(user_id)
+
     if last_expenses == []:
         await update.message.reply_text("Сегодня еще не было расходов")
     else:
@@ -63,13 +74,14 @@ async def last(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     index = int(update.message.text[4:])
-    await expen.delete(index)
+    user_id = int(update.message.from_user.id)
+    await expen.delete(index, user_id)
     answer_message = "Удалилась"
     await update.message.reply_text(answer_message)
 
 
 def main() -> None:
-    bot = Application.builder().token("TOKEN").build()
+    bot = Application.builder().token("5697158099:AAFw_KKUK88riHC_3FgMeHL10T_BsR9Y3U8").build()
     bot.add_handler(CommandHandler("start", start))
     bot.add_handler(CommandHandler("help", help))
 
